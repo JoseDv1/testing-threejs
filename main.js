@@ -27,24 +27,43 @@ renderer.setSize($3d.clientWidth, $3d.clientHeight);
 $3d.appendChild(renderer.domElement);
 
 // Cargar el modelo 3D
-const loader = new GLTFLoader();
-let piña;
-loader.load("pizza.glb", (gltf) => {
-	scene.add(gltf.scene);
-	piña = gltf.scene;
-});
+const LoadModel = (name) => {
+	return new Promise((resolve, reject) => {
+		const loader = new GLTFLoader();
+		loader.load(
+			name,
+			(gltf) => {
+				const model = gltf.scene;
+				scene.add(model);
+				resolve(model);
+			},
+			undefined,
+			reject
+		);
+	});
+};
+
+let pizza = await LoadModel("pizza.glb");
+let piña = await LoadModel("piña.glb");
 
 // Posicionar la cámara
-camera.position.z = 1;
+camera.position.z = 1.5;
 camera.position.y = 1;
-camera.rotation.x = -0.75;
+camera.position.x = 1;
+camera.rotation.x = -0.5;
+
+// Posicionar la piña
+piña.position.x = 2;
+piña.position.z = -0.5;
+piña.scale.set(0.5, 0.5, 0.5);
 
 // REnderizar la escena
 const animate = function () {
 	requestAnimationFrame(animate);
 	renderer.render(scene, camera);
 
-	if (piña) {
+	if (pizza && piña) {
+		pizza.rotation.y += 0.01;
 		piña.rotation.y += 0.01;
 	}
 };
